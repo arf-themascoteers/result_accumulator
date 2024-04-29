@@ -5,10 +5,19 @@ import re
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split('([0-9]+)', s)]
 
+def extract_ending_integer(s):
+    # Search for one or more digits at the end of the string
+    match = re.search(r'\d+$', s)
+    if match:
+        return int(match.group())
+    else:
+        return None
+
 final_df = pd.DataFrame(columns=["N","Best_M", "R2_val", "RMSE_val", "Bands"])
 
 for index, file in enumerate(os.listdir("original")):
-    counter = int(file.split("_")[2].split(".")[0])
+    counter = file.split("_")[-1].split(".")[0]
+    counter = extract_ending_integer(counter)
     path = os.path.join("original", file)
     df = pd.read_csv(path)
     df.drop(["dataset","target_size","fold","algorithm","final_size","time"], axis=1, inplace=True)
